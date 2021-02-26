@@ -1,2 +1,4 @@
-# Swagger JSON
-This is a swagger JSON built by the [swagger-codegen](https://github.com/swagger-api/swagger-codegen) project.
+# Book Recommendation Service
+API of a book recommendation service. The service allows to get info about books, reviewers, reviews.
+### Swaggerhub
+https://app.swaggerhub.com/apis-docs/a1d4r/book-recommendation-service/1.0.0
