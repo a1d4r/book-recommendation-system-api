@@ -1,0 +1,928 @@
+---
+swagger: "2.0"
+info:
+  description: API of a book recommendation service. The service allows to get info about books, reviewers, reviews.
+  version: 1.0.0
+  title: Book Recommendation Service
+  contact:
+    name: Aidar Garikhanov
+    email: a1d4r@yandex.ru
+basePath: /v1
+tags:
+- name: books
+  description: Everything about books
+- name: reviewers
+  description: Everything about reviewers (users)
+- name: reviews
+  description: Everything about reviews
+- name: bulk
+  description: Bulk operations
+schemes:
+- https
+- http
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+  /books:
+    get:
+      tags:
+      - books
+      summary: Get a list of books
+      parameters:
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result set
+        required: false
+        type: integer
+        minimum: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        required: false
+        type: integer
+        maximum: 100
+        minimum: 0
+      responses:
+        "200":
+          description: Paging information and array of Book objects
+          schema:
+            $ref: '#/definitions/Books'
+    post:
+      tags:
+      - books
+      summary: Create a new book
+      parameters:
+      - in: body
+        name: body
+        description: Book object
+        required: true
+        schema:
+          $ref: '#/definitions/Book'
+      responses:
+        "201":
+          description: Book was created
+        "400":
+          description: Bad request (invalid data)
+  /books/{id}:
+    get:
+      tags:
+      - books
+      summary: Find a book by ID
+      parameters:
+      - name: id
+        in: path
+        description: Book ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Book object
+          schema:
+            $ref: '#/definitions/Book'
+        "400":
+          description: Bad request (invalid data)
+        "404":
+          description: Book with the specified ID was not found
+    put:
+      tags:
+      - books
+      summary: Update an existing book
+      parameters:
+      - name: id
+        in: path
+        description: Book ID
+        required: true
+        type: integer
+      - in: body
+        name: body
+        description: Book object
+        required: true
+        schema:
+          $ref: '#/definitions/Book'
+      responses:
+        "204":
+          description: Book was updated
+        "400":
+          description: ID is invalid (e.g. not a number)
+        "404":
+          description: Book with the specified ID was not found
+    delete:
+      tags:
+      - books
+      summary: Delete an existing book
+      parameters:
+      - name: id
+        in: path
+        description: Book ID
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Book was deleted
+        "400":
+          description: ID is invalid (e.g. not a number)
+        "404":
+          description: Book with the specified ID was not found
+  /books/{id}/reviews:
+    get:
+      tags:
+      - books
+      summary: Get a list of reviews on the book with specified ID
+      parameters:
+      - name: id
+        in: path
+        description: Book ID
+        required: true
+        type: integer
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result set
+        required: false
+        type: integer
+        minimum: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        required: false
+        type: integer
+        maximum: 100
+        minimum: 0
+      responses:
+        "200":
+          description: Paging information and array of Review objects
+          schema:
+            $ref: '#/definitions/Reviews'
+        "400":
+          description: Bad request (invalid data)
+        "404":
+          description: Book with the specified ID was not found
+  /reviewers:
+    get:
+      tags:
+      - reviewers
+      summary: Get a list of reviewers
+      parameters:
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result set
+        required: false
+        type: integer
+        minimum: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        required: false
+        type: integer
+        maximum: 100
+        minimum: 0
+      responses:
+        "200":
+          description: Paging information and array of Reviewer objects
+          schema:
+            $ref: '#/definitions/Books'
+    post:
+      tags:
+      - reviewers
+      summary: Create a new reviewer
+      parameters:
+      - in: body
+        name: body
+        description: Review object
+        required: true
+        schema:
+          $ref: '#/definitions/Reviewer'
+      responses:
+        "201":
+          description: Reviewer was created
+        "400":
+          description: Bad request (invalid data)
+  /reviewers/{id}:
+    get:
+      tags:
+      - reviewers
+      summary: Find a reviewer by ID
+      parameters:
+      - name: id
+        in: path
+        description: Reviewer ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Reviewer object
+          schema:
+            $ref: '#/definitions/Reviewer'
+        "400":
+          description: Bad request (invalid data)
+        "404":
+          description: Reviewer with the specified ID was not found
+    put:
+      tags:
+      - reviewers
+      summary: Update an existing reviewer
+      parameters:
+      - name: id
+        in: path
+        description: Reviewer ID
+        required: true
+        type: integer
+      - in: body
+        name: body
+        description: Reviewer object
+        required: true
+        schema:
+          $ref: '#/definitions/Reviewer'
+      responses:
+        "204":
+          description: Reviewer was updated
+        "400":
+          description: ID is invalid (e.g. not a number)
+        "404":
+          description: Reviewer with the specified ID was not found
+    delete:
+      tags:
+      - reviewers
+      summary: Delete an existing reviewer
+      parameters:
+      - name: id
+        in: path
+        description: Reviewer ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Reviewer was deleted.
+        "400":
+          description: ID is invalid (e.g. not a number)
+        "404":
+          description: Reviewer with the specified ID was not found
+  /reviewers/{id}/reviews:
+    get:
+      tags:
+      - reviewers
+      summary: Get a list of reviews created by the reviewer with specified ID
+      parameters:
+      - name: id
+        in: path
+        description: Reviewer ID
+        required: true
+        type: integer
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result set
+        required: false
+        type: integer
+        minimum: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        required: false
+        type: integer
+        maximum: 100
+        minimum: 0
+      responses:
+        "200":
+          description: Paging information and array of Review objects
+          schema:
+            $ref: '#/definitions/Reviews'
+        "400":
+          description: Bad request (invalid data)
+        "404":
+          description: Reviewer with the specified ID was not found
+  /reviewers/{id}/recommended-books:
+    get:
+      tags:
+      - reviewers
+      summary: Get a list of books recommended to a reviewer with specified ID
+      parameters:
+      - name: id
+        in: path
+        description: Reviewer ID
+        required: true
+        type: integer
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result set
+        required: false
+        type: integer
+        minimum: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        required: false
+        type: integer
+        maximum: 100
+        minimum: 0
+      responses:
+        "200":
+          description: Paging information and array of Book objects
+          schema:
+            $ref: '#/definitions/Books'
+        "400":
+          description: Bad request (invalid data)
+        "404":
+          description: Reviewer with the specified ID was not found
+  /reviewers/{id}/similar-reviewers:
+    get:
+      tags:
+      - reviewers
+      summary: Get a list of reviewers similar to a reviewer with specified ID
+      parameters:
+      - name: id
+        in: path
+        description: Reviewer ID
+        required: true
+        type: integer
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result set
+        required: false
+        type: integer
+        minimum: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        required: false
+        type: integer
+        maximum: 100
+        minimum: 0
+      responses:
+        "200":
+          description: Paging information and array of Reviewer objects
+          schema:
+            $ref: '#/definitions/Reviewers'
+        "400":
+          description: Bad request (invalid data)
+        "404":
+          description: Reviewer with the specified ID was not found
+  /reviews:
+    get:
+      tags:
+      - reviews
+      summary: Get a list of reviews
+      parameters:
+      - name: offset
+        in: query
+        description: The number of items to skip before starting to collect the result set
+        required: false
+        type: integer
+        minimum: 0
+      - name: limit
+        in: query
+        description: The numbers of items to return
+        required: false
+        type: integer
+        maximum: 100
+        minimum: 0
+      responses:
+        "200":
+          description: Paging information and array of Review objects
+          schema:
+            $ref: '#/definitions/Reviews'
+    post:
+      tags:
+      - reviews
+      summary: Create a new review
+      parameters:
+      - in: body
+        name: body
+        description: Review object
+        required: true
+        schema:
+          $ref: '#/definitions/Review'
+      responses:
+        "201":
+          description: Review was created
+        "400":
+          description: Bad request (invalid data)
+  /reviews/{id}:
+    get:
+      tags:
+      - reviews
+      summary: Find a review by ID
+      parameters:
+      - name: id
+        in: path
+        description: Review ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Review object
+          schema:
+            $ref: '#/definitions/Review'
+        "400":
+          description: Bad request (invalid data)
+        "404":
+          description: Review with the specified ID was not found
+    put:
+      tags:
+      - reviews
+      summary: Update an existing reviews
+      parameters:
+      - name: id
+        in: path
+        description: Review ID
+        required: true
+        type: integer
+      - in: body
+        name: body
+        description: Review object
+        required: true
+        schema:
+          $ref: '#/definitions/Review'
+      responses:
+        "204":
+          description: Review was updated
+        "400":
+          description: ID is invalid (e.g. not a number)
+        "404":
+          description: Review with the specified ID was not found
+    delete:
+      tags:
+      - reviews
+      summary: Delete an existing reviews
+      parameters:
+      - name: id
+        in: path
+        description: Review ID
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Review was deleted
+        "400":
+          description: ID is invalid (e.g. not a number)
+        "404":
+          description: Review with the specified ID was not found
+  /bulk/books:
+    get:
+      tags:
+      - bulk
+      summary: Get multiple books by IDs
+      parameters:
+      - in: body
+        name: ids
+        description: Array of books IDs
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and Book object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200'
+        "400":
+          description: Validation error (Invalid data)
+    post:
+      tags:
+      - bulk
+      summary: Create multiple books
+      parameters:
+      - in: body
+        name: books
+        description: Array of Book objects
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Book'
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_1'
+    put:
+      tags:
+      - bulk
+      summary: Create multiple books
+      parameters:
+      - in: body
+        name: books
+        description: Array of objects. Each object contains ID and properties of Book object
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/books'
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_1'
+    delete:
+      tags:
+      - bulk
+      summary: Delete multiple books by IDs
+      parameters:
+      - in: body
+        name: ids
+        description: Array of books IDs
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_2'
+  /bulk/reviewers:
+    get:
+      tags:
+      - bulk
+      summary: Get multiple reviewers by IDs
+      parameters:
+      - in: body
+        name: ids
+        description: Array of reviewers IDs
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and Reviewer object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_3'
+        "400":
+          description: Validation error (Invalid data)
+    post:
+      tags:
+      - bulk
+      summary: Create multiple reviewers
+      parameters:
+      - in: body
+        name: books
+        description: Array of Reviewer objects
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Reviewer'
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_1'
+    put:
+      tags:
+      - bulk
+      summary: Create multiple reviewers
+      parameters:
+      - in: body
+        name: reviewers
+        description: Array of objects. Each object contains ID and properties of Reviewer object
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/reviewers'
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_1'
+    delete:
+      tags:
+      - bulk
+      summary: Delete multiple reviewers by IDs
+      parameters:
+      - in: body
+        name: ids
+        description: Array of reviewers IDs
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_2'
+  /bulk/reviews:
+    get:
+      tags:
+      - bulk
+      summary: Get multiple reviews by IDs
+      parameters:
+      - in: body
+        name: ids
+        description: Array of reviews IDs
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and Review object
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_4'
+        "400":
+          description: Validation error (Invalid data)
+    post:
+      tags:
+      - bulk
+      summary: Create multiple reviews
+      parameters:
+      - in: body
+        name: reviews
+        description: Array of Reviews objects
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Review'
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_1'
+    put:
+      tags:
+      - bulk
+      summary: Create multiple reviews
+      parameters:
+      - in: body
+        name: reviews
+        description: Array of objects. Each object contains ID and properties of Review object
+        required: true
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/reviews'
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_1'
+    delete:
+      tags:
+      - bulk
+      summary: Delete multiple reviews by IDs
+      parameters:
+      - in: body
+        name: ids
+        description: Array of reviews IDs
+        required: true
+        schema:
+          type: array
+          items:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: Array of objects. Each object contains status code and ID
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/inline_response_200_2'
+definitions:
+  Book:
+    type: object
+    required:
+    - author
+    - title
+    properties:
+      id:
+        type: integer
+        example: 1
+        readOnly: true
+      title:
+        type: string
+        example: The Da Vinci Code
+      author:
+        type: string
+        example: Dan Brown
+      isbn:
+        type: string
+        example: 978-0385504201
+      published_date:
+        type: string
+        format: date
+        example: 2003-04-01
+      publisher:
+        type: string
+        example: Doubleday
+  Reviewer:
+    type: object
+    required:
+    - username
+    properties:
+      id:
+        type: integer
+        example: 1
+        readOnly: true
+      username:
+        type: string
+        example: benjamin
+      email:
+        type: string
+        format: email
+        example: benjamin@example.com
+      first_name:
+        type: string
+        example: Benjamin
+      last_name:
+        type: string
+        example: Bannister
+      created_at:
+        type: string
+        format: date
+        example: 2011-04-01
+        readOnly: true
+  Review:
+    type: object
+    required:
+    - book_id
+    - content
+    - reviewer_id
+    properties:
+      id:
+        type: integer
+        example: 1
+        readOnly: true
+      reviewer_id:
+        type: integer
+        example: 1
+      book_id:
+        type: integer
+        example: 1
+      rating:
+        type: integer
+        example: 5
+        minimum: 1
+        maximum: 5
+      title:
+        type: string
+        example: The Book That Got Me To Read Books Again
+      content:
+        type: string
+        example: It's been years since this 'The Da Vinci Code' has been out, and I'm sure everything has been said that needs to be said about it, but I would like to share my own personal story about this book...
+      published_date:
+        type: string
+        format: date
+        example: 2015-09-22
+        readOnly: true
+  Paging:
+    type: object
+    properties:
+      skip:
+        type: integer
+        example: 1
+      limit:
+        type: integer
+        example: 1
+      count:
+        type: integer
+        example: 1
+  Books:
+    required:
+    - data
+    - paging
+    properties:
+      paging:
+        $ref: '#/definitions/Paging'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Book'
+  Reviews:
+    required:
+    - data
+    - paging
+    properties:
+      paging:
+        $ref: '#/definitions/Paging'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Review'
+  Reviewers:
+    required:
+    - data
+    - paging
+    properties:
+      paging:
+        $ref: '#/definitions/Paging'
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Reviewer'
+  inline_response_200:
+    type: object
+    properties:
+      status:
+        type: string
+        example: "200"
+      object:
+        $ref: '#/definitions/Book'
+  books:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      object:
+        $ref: '#/definitions/Book'
+  inline_response_200_1:
+    type: object
+    properties:
+      status:
+        type: string
+        example: "201"
+      id:
+        type: integer
+        example: 1
+  inline_response_200_2:
+    type: object
+    properties:
+      status:
+        type: string
+        example: "200"
+      id:
+        type: integer
+        example: 1
+  inline_response_200_3:
+    type: object
+    properties:
+      status:
+        type: string
+        example: "200"
+      object:
+        $ref: '#/definitions/Reviewer'
+  reviewers:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      object:
+        $ref: '#/definitions/Reviewer'
+  inline_response_200_4:
+    type: object
+    properties:
+      status:
+        type: string
+        example: "200"
+      object:
+        $ref: '#/definitions/Review'
+  reviews:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      object:
+        $ref: '#/definitions/Review'
+parameters:
+  offsetParam:
+    name: offset
+    in: query
+    description: The number of items to skip before starting to collect the result set
+    required: false
+    type: integer
+    minimum: 0
+  limitParam:
+    name: limit
+    in: query
+    description: The numbers of items to return
+    required: false
+    type: integer
+    maximum: 100
+    minimum: 0
